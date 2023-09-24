@@ -4,6 +4,207 @@
     <input type="text" id="myInput" name="name" placeholder="Title...">
     <button type="submit" formmethod="post">Add work</button>
   </form>
- 
 </div>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo hoá đơn</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f0f0f0;
+          margin: 0;
+          padding: 0;
+      }
+  
+      .container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fff;
+          box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+          border-radius: 5px;
+      }
+  
+      h1 {
+          text-align: center;
+          color: #007BFF;
+      }
+  
+      .form-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          align-items: center;
+      }
+  
+      .form-group label {
+        flex: 1;
+        max-width: calc(33.333% - 10px);
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: inline-block; /* Thay đổi display thành inline-block */
+      }
+
+  
+      .form-group select, .form-group input[type="number"] {
+          flex: 2;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+      }
+  
+      .form-group .btn {
+          flex: 1;
+          background-color: #007BFF;
+          color: #fff;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+  
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+      }
+  
+      th, td {
+          border: 1px solid #ccc;
+          padding: 8px;
+          text-align: left;
+      }
+  
+      th {
+          background-color: #f2f2f2;
+      }
+  
+      .quantity-input {
+          width: 50px;
+      }
+  
+      .delete-icon {
+          cursor: pointer;
+          color: red;
+      }
+  
+      .total {
+          text-align: right;
+          font-weight: bold;
+          font-size: 18px;
+          margin-top: 20px;
+          color: #333;
+      }
+  
+      .error-message {
+          color: red;
+          font-size: 14px;
+          margin-top: 5px;
+      }
+  </style>
+  
+</head>
+<body>
+    <div class="container">
+        <h1>Tạo hoá đơn</h1>
+        <div class="form-group">
+            <label for="product">Tên sản phẩm:</label>
+            <select id="product">
+                <option value="Sản phẩm 1">Sản phẩm 1</option>
+                <option value="Sản phẩm 2">Sản phẩm 2</option>
+                <!-- Thêm các tùy chọn sản phẩm khác (nếu cần) -->
+            </select>
+            <label for="quantity">Số lượng:</label>
+            <input type="number" id="quantity" placeholder="Nhập số lượng" min="1">
+            <label for="price">Đơn giá:</label>
+            <input type="number" id="price" placeholder="Nhập đơn giá" min="0">
+            <button class="btn" onclick="themSanPham()">Thêm</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Tổng tiền</th>
+                    <th>Xóa</th>
+                </tr>
+            </thead>
+            <tbody id="hoaDon">
+                <!-- Dữ liệu hoá đơn sẽ được thêm vào đây -->
+            </tbody>
+        </table>
+        <p class="total">Tổng tiền: <span id="tongTien">0</span> VNĐ</p>
+    </div>
+
+    <script>
+        function themSanPham() {
+            const productInput = document.getElementById("product");
+            const quantityInput = document.getElementById("quantity");
+            const priceInput = document.getElementById("price");
+
+            const productName = productInput.value;
+            const quantity = parseInt(quantityInput.value);
+            const price = parseFloat(priceInput.value);
+
+            if (productName && quantity && price) {
+                const hoaDonTable = document.getElementById("hoaDon");
+                const newRow = hoaDonTable.insertRow(-1);
+
+                const cell1 = newRow.insertCell(0);
+                const cell2 = newRow.insertCell(1);
+                const cell3 = newRow.insertCell(2);
+                const cell4 = newRow.insertCell(3);
+                const cell5 = newRow.insertCell(4);
+
+                cell1.innerHTML = productName;
+                cell2.innerHTML = `<input class="quantity-input" type="number" value="${quantity}" min="1" onchange="capNhatTongTien(this)">`;
+                cell3.innerHTML = price;
+                cell4.innerHTML = quantity * price;
+                cell5.innerHTML = `<span class="delete-icon" onclick="xoaSanPham(this)">Xoá</span>`;
+
+                productInput.value = "";
+                quantityInput.value = "";
+                priceInput.value = "";
+
+                tinhTong();
+            } else {
+                alert("Vui lòng nhập đầy đủ thông tin sản phẩm.");
+            }
+        }
+
+        function capNhatTongTien(input) {
+            const row = input.parentNode.parentNode;
+            const quantity = parseInt(input.value);
+            const price = parseFloat(row.cells[2].innerHTML);
+            row.cells[3].innerHTML = quantity * price;
+            tinhTong();
+        }
+
+        function xoaSanPham(icon) {
+            const row = icon.parentNode.parentNode;
+            const hoaDonTable = document.getElementById("hoaDon");
+            hoaDonTable.deleteRow(row.rowIndex-1);
+            tinhTong();
+        }
+
+        function tinhTong() {
+            const hoaDonTable = document.getElementById("hoaDon").getElementsByTagName("tbody")[0];
+            let tongTien = 0;
+
+            for (let i = 0; i < hoaDonTable.rows.length; i++) {
+                const row = hoaDonTable.rows[i];
+                const totalCell = row.cells[3];
+                tongTien += parseFloat(totalCell.innerHTML);
+            }
+
+            document.getElementById("tongTien").textContent = tongTien.toFixed(2) + " VNĐ";
+        }
+    </script>
+</body>
+</html>

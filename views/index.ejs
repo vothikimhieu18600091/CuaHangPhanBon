@@ -1,1 +1,122 @@
-<h1> Chào mừng <%- currentUser ? currentUser.username : 'Khach' %> đến với Cửa Hàng Phân Bón Ranty Vo</h1>
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo doanh thu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007BFF;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        input[type="month"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-container {
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>BÁO CÁO DOANH THU</h1>
+    <form id="reportForm">
+        <label for="month">Chọn tháng:</label>
+        <input type="month" id="month" required>
+        <button type="submit">Xem báo cáo</button>
+    </form>
+    <div id="reportResult">
+        <!-- Kết quả báo cáo doanh thu sẽ được hiển thị ở đây -->
+    </div>
+
+    <script>
+        const reportForm = document.getElementById("reportForm");
+        const reportResult = document.getElementById("reportResult");
+
+        reportForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const selectedMonth = document.getElementById("month").value;
+
+            // Truy vấn dữ liệu doanh thu (thay bằng dữ liệu thực tế)
+            const revenueData = [
+                { date: "2023-09-20", amount: 1000 },
+                { date: "2023-09-21", amount: 1500 },
+                { date: "2023-10-05", amount: 2000 },
+                { date: "2023-10-15", amount: 1200 },
+                // Thêm dữ liệu doanh thu khác ở đây
+            ];
+
+            // Lọc dữ liệu doanh thu dựa trên tháng và năm
+            const filteredRevenue = revenueData.filter(item => {
+                return item.date.substring(0, 7) === selectedMonth;
+            });
+
+            // Tính tổng doanh thu
+            const totalRevenue = filteredRevenue.reduce((total, item) => total + item.amount, 0);
+
+            // Hiển thị báo cáo
+            showReport(filteredRevenue, totalRevenue);
+        });
+
+        function showReport(data, total) {
+            let reportHTML = "<h2>Báo cáo doanh thu</h2>";
+
+            if (data.length === 0) {
+                reportHTML += "<p>Không có dữ liệu doanh thu cho tháng này.</p>";
+            } else {
+                reportHTML += "<table>";
+                reportHTML += "<tr><th>Ngày</th><th>Doanh thu</th></tr>";
+
+                data.forEach(item => {
+                    reportHTML += `<tr><td>${item.date}</td><td>${item.amount} VNĐ</td></tr>`;
+                });
+
+                reportHTML += "</table>";
+                reportHTML += `<p>Tổng doanh thu: ${total} VNĐ</p>`;
+            }
+
+            reportResult.innerHTML = reportHTML;
+        }
+    </script>
+</body>
+</html>
